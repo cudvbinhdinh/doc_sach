@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tổng Hợp Trang Sách (OCR + Ảnh)</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #0f766e;
+      --danger: #b91c1c;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto 40px auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      margin: 0 0 6px 0;
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input[type="password"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .flex-1 {
+      flex: 1 1 200px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.08s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .btn-small {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .upload-box {
+      border: 2px dashed #93c5fd;
+      background: #eff6ff;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .upload-box input[type="file"] {
+      display: none;
+    }
+
+    .page-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .page-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .page-item img {
+      width: 100%;
+      height: 115px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #e5e7eb;
+    }
+
+    .page-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .progress-wrap {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.25s ease;
+    }
+
+    .status-text {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin-top: 6px;
+      white-space: pre-line;
+    }
+
+    .output-area {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      min-height: 200px;
+    }
+
+    .book-page-section {
+      border-bottom: 1px dashed #cbd5e1;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+    }
+
+    .book-page-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .book-page-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 8px 0;
+    }
+
+    .extracted-img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 10px auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .img-caption {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: -6px;
+      margin-bottom: 10px;
+    }
+
+    .error-box {
+      color: var(--danger);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Tổng Hợp Trang Sách (Chữ + Hình Ảnh)</h1>
+      <p class="subtitle">Chọn nhiều ảnh trang sách (hỗ trợ ảnh dung lượng lớn), tự tối ưu ảnh, trích xuất nội dung và chèn hình minh họa gốc.</p>
+    </div>
+
+    <!-- Bước 1: Cấu hình API Key & Model -->
+    <div class="card">
+      <label for="apiKeyInput">1. Gemini API Key (để trống và lưu trực tiếp trên thiết bị)</label>
+      <div class="row">
+        <input id="apiKeyInput" type="password" class="flex-1" placeholder="Dán Gemini API Key của bạn vào đây..." autocomplete="off" />
+        <button id="toggleKeyBtn" type="button" class="btn-secondary">Hiện</button>
+        <button id="saveKeyBtn" type="button" class="btn-primary">Lưu Key</button>
+        <button id="clearKeyBtn" type="button" class="btn-danger">Xóa</button>
+      </div>
+      <div class="hint" id="keyStatus">Chưa lưu API Key.</div>
+
+      <div style="margin-top: 12px;">
+        <label for="modelSelect">Model Gemini</label>
+        <select id="modelSelect">
+          <option value="gemini-2.5-flash" selected>gemini-2.5-flash (Khuyên dùng - nhanh, chuẩn OCR & ảnh)</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro (Chuyên sâu trang phức tạp / chữ nhỏ)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bước 2: Chọn & sắp xếp ảnh trang sách -->
+    <div class="card">
+      <label>2. Chọn ảnh trang sách (có thể chọn nhiều ảnh cùng lúc)</label>
+      <div class="upload-box">
+        <input id="fileInput" type="file" accept="image/*" multiple />
+        <button id="pickFilesBtn" type="button" class="btn-primary">+ Chọn Ảnh Trang Sách</button>
+        <button id="clearPagesBtn" type="button" class="btn-secondary">Xóa Tất Cả Ảnh</button>
+        <div class="hint">Ảnh lớn sẽ tự thu nhỏ về tối đa 1600px chiều ngang để chạy mượt trên điện thoại.</div>
+      </div>
+
+      <div id="pageList" class="page-list"></div>
+    </div>
+
+    <!-- Bước 3: Xử lý tổng hợp -->
+    <div class="card">
+      <label>3. Trích xuất & Tổng hợp</label>
+      <div class="row">
+        <button id="startBtn" type="button" class="btn-success flex-1">Bắt Đầu Tổng Hợp</button>
+        <button id="stopBtn" type="button" class="btn-danger" disabled>Dừng</button>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div id="progressBar" class="progress-bar-fill"></div>
+        </div>
+        <div id="statusText" class="status-text">Đang chuẩn bị...</div>
+      </div>
+    </div>
+
+    <!-- Bước 4: Kết quả tổng hợp -->
+    <div class="card">
+      <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
+        <label style="margin: 0;">4. Nội Dung Tổng Hợp</label>
+        <div class="row">
+          <button id="copyTextBtn" type="button" class="btn-secondary btn-small">Copy Văn Bản</button>
+          <button id="downloadHtmlBtn" type="button" class="btn-secondary btn-small">Tải File (.html)</button>
+          <button id="clearResultBtn" type="button" class="btn-danger btn-small">Xóa Kết Quả</button>
+        </div>
+      </div>
+
+      <div id="resultContainer" class="output-area">
+        <div class="hint">Nội dung trích xuất và hình ảnh minh họa từ các trang sách sẽ hiển thị tại đây.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY_API = "BOOK_OCR_GEMINI_API_KEY_V1";
+      var STORAGE_KEY_MODEL = "BOOK_OCR_GEMINI_MODEL_V1";
+      var MAX_DIMENSION = 1600;
+      var JPEG_QUALITY = 0.82;
+
+      var state = {
+        pages: [], // { id, name, sizeMB, objectUrl, resultHtml, error }
+        isRunning: false,
+        cancelRequested: false
+      };
+
+      var els = {
+        apiKeyInput: document.getElementById("apiKeyInput"),
+        toggleKeyBtn: document.getElementById("toggleKeyBtn"),
+        saveKeyBtn: document.getElementById("saveKeyBtn"),
+        clearKeyBtn: document.getElementById("clearKeyBtn"),
+        keyStatus: document.getElementById("keyStatus"),
+        modelSelect: document.getElementById("modelSelect"),
+        fileInput: document.getElementById("fileInput"),
+        pickFilesBtn: document.getElementById("pickFilesBtn"),
+        clearPagesBtn: document.getElementById("clearPagesBtn"),
+        pageList: document.getElementById("pageList"),
+        startBtn: document.getElementById("startBtn"),
+        stopBtn: document.getElementById("stopBtn"),
+        progressWrap: document.getElementById("progressWrap"),
+        progressBar: document.getElementById("progressBar"),
+        statusText: document.getElementById("statusText"),
+        resultContainer: document.getElementById("resultContainer"),
+        copyTextBtn: document.getElementById("copyTextBtn"),
+        downloadHtmlBtn: document.getElementById("downloadHtmlBtn"),
+        clearResultBtn: document.getElementById("clearResultBtn")
+      };
+
+      function safeGetStorage(key) {
+        try {
+          return window.localStorage ? window.localStorage.getItem(key) : "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function safeSetStorage(key, value) {
+        try {
+          if (window.localStorage) {
+            window.localStorage.setItem(key, value);
+          }
+        } catch (e) {
+          // Bỏ qua nếu bộ nhớ đầy hoặc bị chặn trên WebView
+        }
+      }
+
+      function safeRemoveStorage(key) {
+        try {
+          if (window.localStorage) {
+            window.localStorage.removeItem(key);
+          }
+        } catch (e) {
+          // Bỏ qua
+        }
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function formatParagraphsToHtml(rawText) {
+        var cleaned = String(rawText || "").replace(/\r\n/g, "\n").trim();
+        if (!cleaned) return "";
+        var blocks = cleaned.split(/\n{2,}/);
+        return blocks
+          .map(function (block) {
+            var trimmed = block.trim();
+            if (!trimmed) return "";
+            return "<p>" + escapeHtml(trimmed).replace(/\n/g, "<br>") + "</p>";
+          })
+          .join("");
+      }
+
+      function initSettings() {
+        var savedKey = safeGetStorage(STORAGE_KEY_API);
+        if (savedKey) {
+          els.apiKeyInput.value = savedKey;
+          els.keyStatus.textContent = "Đã tải API Key đã lưu trên thiết bị.";
+        } else {
+          els.apiKeyInput.value = "";
+          els.keyStatus.textContent = "Chưa có API Key được lưu. Hãy nhập key của bạn và bấm Lưu Key.";
+        }
+
+        var savedModel = safeGetStorage(STORAGE_KEY_MODEL);
+        if (savedModel) {
+          els.modelSelect.value = savedModel;
+        }
+      }
+
+      function loadImageFromFile(file) {
+        return new Promise(function (resolve, reject) {
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            resolve({ img: img, objectUrl: url });
+          };
+          img.onerror = function () {
+            URL.revokeObjectURL(url);
+            reject(new Error("Không thể đọc file ảnh: " + file.name));
+          };
+          img.src = url;
+        });
+      }
+
+      // Nén ảnh nặng trước khi gửi API để tránh lỗi bộ nhớ trên điện thoại
+      function prepareCompressedJpeg(img) {
+        var origW = img.naturalWidth || img.width;
+        var origH = img.naturalHeight || img.height;
+        if (!origW || !origH) {
+          throw new Error("Kích thước ảnh không hợp lệ.");
+        }
+
+        var targetW = origW;
+        var targetH = origH;
+
+        if (origW > MAX_DIMENSION || origH > MAX_DIMENSION) {
+          if (origW >= origH) {
+            targetW = MAX_DIMENSION;
+            targetH = Math.round((origH * MAX_DIMENSION) / origW);
+          } else {
+            targetH = MAX_DIMENSION;
+            targetW = Math.round((origW * MAX_DIMENSION) / origH);
+          }
+        }
+
+        var canvas = document.createElement("canvas");
+        canvas.width = targetW;
+        canvas.height = targetH;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, targetW, targetH);
+
+        var dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+        var base64 = dataUrl.split(",")[1] || "";
+
+        // Giải phóng canvas tạm
+        canvas.width = 1;
+        canvas.height = 1;
+
+        return {
+          base64: base64,
+          mimeType: "image/jpeg",
+          width: targetW,
+          height: targetH
+        };
+      }
+
+      // Cắt vùng ảnh minh họa/biểu đồ từ ảnh gốc theo tọa độ [ymin, xmin, ymax, xmax] (0..1000)
+      function cropImageByBox(img, box2d) {
+        if (!Array.isArray(box2d) || box2d.length < 4) return null;
+
+        var ymin = Number(box2d[0]);
+        var xmin = Number(box2d[1]);
+        var ymax = Number(box2d[2]);
+        var xmax = Number(box2d[3]);
+
+        if (
+          isNaN(ymin) || isNaN(xmin) || isNaN(ymax) || isNaN(xmax) ||
+          ymax <= ymin || xmax <= xmin
+        ) {
+          return null;
+        }
+
+        var origW = img.naturalWidth || img.width;
+        var origH = img.naturalHeight || img.height;
+
+        // Nới nhẹ viền 1.5% để không cắt sát chữ/viền hình
+        var padY = 15;
+        var padX = 15;
+
+        var sy = Math.max(0, Math.floor(((ymin - padY) / 1000) * origH));
+        var sx = Math.max(0, Math.floor(((xmin - padX) / 1000) * origW));
+        var ey = Math.min(origH, Math.ceil(((ymax + padY) / 1000) * origH));
+        var ex = Math.min(origW, Math.ceil(((xmax + padX) / 1000) * origW));
+
+        var sw = ex - sx;
+        var sh = ey - sy;
+        if (sw < 24 || sh < 24) return null;
+
+        // Giới hạn chiều rộng ảnh cắt tối đa 1200px cho nhẹ file
+        var dw = sw;
+        var dh = sh;
+        if (dw > 1200) {
+          dh = Math.round((sh * 1200) / sw);
+          dw = 1200;
+        }
+
+        var canvas = document.createElement("canvas");
+        canvas.width = dw;
+        canvas.height = dh;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
+
+        var croppedUrl = canvas.toDataURL("image/jpeg", 0.85);
+        canvas.width = 1;
+        canvas.height = 1;
+        return croppedUrl;
+      }
+
+      function renderPageList() {
+        els.pageList.innerHTML = "";
+        if (!state.pages.length) {
+          return;
+        }
+
+        state.pages.forEach(function (page, idx) {
+          var card = document.createElement("div");
+          card.className = "page-item";
+
+          var thumb = document.createElement("img");
+          thumb.src = page.objectUrl;
+          thumb.alt = "Trang " + (idx + 1);
+
+          var meta = document.createElement("div");
+          meta.className = "page-meta";
+          meta.textContent = "#" + (idx + 1) + " • " + page.name + " (" + page.sizeMB + " MB)";
+
+          var actions = document.createElement("div");
+          actions.className = "page-actions";
+
+          var upBtn = document.createElement("button");
+          upBtn.type = "button";
+          upBtn.className = "btn-secondary btn-small";
+          upBtn.textContent = "↑";
+          upBtn.disabled = idx === 0 || state.isRunning;
+          upBtn.onclick = function () {
+            movePage(idx, idx - 1);
+          };
+
+          var downBtn = document.createElement("button");
+          downBtn.type = "button";
+          downBtn.className = "btn-secondary btn-small";
+          downBtn.textContent = "↓";
+          downBtn.disabled = idx === state.pages.length - 1 || state.isRunning;
+          downBtn.onclick = function () {
+            movePage(idx, idx + 1);
+          };
+
+          var delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "btn-danger btn-small";
+          delBtn.textContent = "Xóa";
+          delBtn.disabled = state.isRunning;
+          delBtn.onclick = function () {
+            removePage(idx);
+          };
+
+          actions.appendChild(upBtn);
+          actions.appendChild(downBtn);
+          actions.appendChild(delBtn);
+
+          card.appendChild(thumb);
+          card.appendChild(meta);
+          card.appendChild(actions);
+          els.pageList.appendChild(card);
+        });
+      }
+
+      function movePage(fromIdx, toIdx) {
+        if (toIdx < 0 || toIdx >= state.pages.length) return;
+        var item = state.pages.splice(fromIdx, 1)[0];
+        state.pages.splice(toIdx, 0, item);
+        renderPageList();
+      }
+
+      function removePage(idx) {
+        var page = state.pages[idx];
+        if (page && page.objectUrl) {
+          URL.revokeObjectURL(page.objectUrl);
+        }
+        state.pages.splice(idx, 1);
+        renderPageList();
+      }
+
+      function clearAllPages() {
+        state.pages.forEach(function (p) {
+          if (p.objectUrl) URL.revokeObjectURL(p.objectUrl);
+        });
+        state.pages = [];
+        els.fileInput.value = "";
+        renderPageList();
+      }
+
+      function parseJsonSafe(rawText) {
+        var cleaned = String(rawText || "").trim();
+        // Loại bỏ markdown fence nếu có
+        cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+        try {
+          return JSON.parse(cleaned);
+        } catch (e) {
+          var firstBrace = cleaned.indexOf("{");
+          var lastBrace = cleaned.lastIndexOf("}");
+          if (firstBrace !== -1 && lastBrace > firstBrace) {
+            return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+          }
+          throw new Error("Phản hồi JSON từ Gemini không hợp lệ.");
+        }
+      }
+
+      async function extractSinglePage(apiKey, model, compressedImg) {
+        var endpoint =
+          "https://generativelanguage.googleapis.com/v1beta/models/" +
+          encodeURIComponent(model) +
+          ":generateContent?key=" +
+          encodeURIComponent(apiKey);
+
+        var prompt = [
+          "Bạn là công cụ đọc trang sách chính xác.",
+          "Hãy trích xuất toàn bộ nội dung chữ tiếng Việt (hoặc ngôn ngữ gốc trên trang) theo đúng thứ tự đọc từ trên xuống dưới, trái sang phải.",
+          "Nếu trên trang có hình minh họa, sơ đồ, biểu đồ, bảng vẽ hoặc ảnh chụp riêng biệt (không phải chữ văn bản thuần túy), hãy ghi nhận từng hình bằng một item loại 'image' với khung tọa độ chuẩn hóa [ymin, xmin, ymax, xmax] theo thang 0 đến 1000 và chú thích ngắn gọn (caption).",
+          "Trả về DUY NHẤT một object JSON hợp lệ (không thêm giải thích ngoài JSON) theo cấu trúc:",
+          "{\"blocks\": [{\"type\": \"text\", \"content\": \"...\"}, {\"type\": \"image\", \"box_2d\": [ymin, xmin, ymax, xmax], \"caption\": \"...\"}]}",
+          "Lưu ý: giữ nguyên dấu câu, số liệu, công thức; nối từ bị ngắt dòng hợp lý; không tự bịa thêm nội dung ngoài trang sách."
+        ].join("\n");
+
+        var payload = {
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: prompt },
+                {
+                  inlineData: {
+                    mimeType: compressedImg.mimeType,
+                    data: compressedImg.base64
+                  }
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json"
+          }
+        };
+
+        var response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        var data = null;
+        try {
+          data = await response.json();
+        } catch (e) {
+          throw new Error("Lỗi đọc phản hồi mạng (HTTP " + response.status + ").");
+        }
+
+        if (!response.ok) {
+          var errMsg =
+            data && data.error && data.error.message
+              ? data.error.message
+              : "Lỗi gọi Gemini API (HTTP " + response.status + ").";
+          throw new Error(errMsg);
+        }
+
+        var candidateText = "";
+        if (
+          data &&
+          Array.isArray(data.candidates) &&
+          data.candidates[0] &&
+          data.candidates[0].content &&
+          Array.isArray(data.candidates[0].content.parts)
+        ) {
+          candidateText = data.candidates[0].content.parts
+            .map(function (p) {
+              return p && typeof p.text === "string" ? p.text : "";
+            })
+            .join("\n");
+        }
+
+        if (!candidateText.trim()) {
+          throw new Error("Gemini không trả về nội dung cho trang này.");
+        }
+
+        return parseJsonSafe(candidateText);
+      }
+
+      function buildPageSectionHtml(pageIndex, pageName, parsedJson, sourceImg) {
+        var htmlParts = [];
+        var blocks = parsedJson && Array.isArray(parsedJson.blocks) ? parsedJson.blocks : [];
+
+        if (!blocks.length) {
+          return "<p><em>Không phát hiện nội dung chữ hoặc hình ảnh rõ ràng trên trang này.</em></p>";
+        }
+
+        blocks.forEach(function (block) {
+          if (!block || typeof block !== "object") return;
+
+          if (block.type === "text" && block.content) {
+            htmlParts.push(formatParagraphsToHtml(block.content));
+          } else if (block.type === "image") {
+            var croppedDataUrl = cropImageByBox(sourceImg, block.box_2d);
+            if (croppedDataUrl) {
+              var cap = block.caption ? escapeHtml(block.caption) : "Hình minh họa từ " + escapeHtml(pageName);
+              htmlParts.push(
+                '<img class="extracted-img" src="' + croppedDataUrl + '" alt="' + cap + '" />' +
+                '<div class="img-caption">' + cap + "</div>"
+              );
+            }
+          }
+        });
+
+        if (!htmlParts.length) {
+          htmlParts.push("<p><em>Trang đã được xử lý nhưng không có khối dữ liệu hiển thị.</em></p>");
+        }
+
+        return htmlParts.join("\n");
+      }
+
+      function renderCombinedResult() {
+        var completedPages = state.pages.filter(function (p) {
+          return Boolean(p.resultHtml || p.error);
+        });
+
+        if (!completedPages.length) {
+          els.resultContainer.innerHTML =
+            '<div class="hint">Nội dung trích xuất và hình ảnh minh họa từ các trang sách sẽ hiển thị tại đây.</div>';
+          return;
+        }
+
+        var sections = completedPages.map(function (page) {
+          var pageOrder = state.pages.indexOf(page) + 1;
+          var header = '<h3 class="book-page-title">Trang ' + (pageOrder > 0 ? pageOrder : "") + " — " + escapeHtml(page.name) + "</h3>";
+          if (page.error) {
+            return (
+              '<div class="book-page-section">' +
+              header +
+              '<div class="error-box">Lỗi xử lý: ' + escapeHtml(page.error) + "</div>" +
+              "</div>"
+            );
+          }
+          return '<div class="book-page-section">' + header + page.resultHtml + "</div>";
+        });
+
+        els.resultContainer.innerHTML = sections.join("\n");
+      }
+
+      async function handleStart() {
+        if (state.isRunning) return;
+
+        var apiKey = els.apiKeyInput.value.trim();
+        if (!apiKey) {
+          alert("Vui lòng nhập Gemini API Key trước khi bắt đầu.");
+          els.apiKeyInput.focus();
+          return;
+        }
+
+        if (!state.pages.length) {
+          alert("Vui lòng chọn ít nhất 1 ảnh trang sách.");
+          return;
+        }
+
+        var model = els.modelSelect.value || "gemini-2.5-flash";
+        safeSetStorage(STORAGE_KEY_MODEL, model);
+
+        state.isRunning = true;
+        state.cancelRequested = false;
+        els.startBtn.disabled = true;
+        els.stopBtn.disabled = false;
+        els.clearPagesBtn.disabled = true;
+        els.progressWrap.style.display = "block";
+        renderPageList();
+
+        var total = state.pages.length;
+
+        for (var i = 0; i < total; i++) {
+          if (state.cancelRequested) {
+            els.statusText.textContent = "Đã dừng xử lý tại trang " + (i + 1) + "/" + total + ".";
+            break;
+          }
+
+          var currentPage = state.pages[i];
+          currentPage.error = "";
+          currentPage.resultHtml = "";
+
+          var pctStart = Math.round((i / total) * 100);
+          els.progressBar.style.width = pctStart + "%";
+          els.statusText.textContent =
+            "Đang xử lý trang " + (i + 1) + "/" + total + ": " + currentPage.name + "...";
+
+          var loaded = null;
+          try {
+            loaded = await loadImageFromFile(currentPage.file);
+            var compressed = prepareCompressedJpeg(loaded.img);
+            var parsed = await extractSinglePage(apiKey, model, compressed);
+            currentPage.resultHtml = buildPageSectionHtml(i + 1, currentPage.name, parsed, loaded.img);
+          } catch (err) {
+            currentPage.error = err && err.message ? err.message : "Lỗi không xác định.";
+          } finally {
+            if (loaded && loaded.objectUrl) {
+              URL.revokeObjectURL(loaded.objectUrl);
+            }
+          }
+
+          renderCombinedResult();
+          var pctDone = Math.round(((i + 1) / total) * 100);
+          els.progressBar.style.width = pctDone + "%";
+        }
+
+        if (!state.cancelRequested) {
+          els.statusText.textContent = "Hoàn tất tổng hợp " + total + " trang sách.";
+        }
+
+        state.isRunning = false;
+        state.cancelRequested = false;
+        els.startBtn.disabled = false;
+        els.stopBtn.disabled = true;
+        els.clearPagesBtn.disabled = false;
+        renderPageList();
+      }
+
+      // Gắn sự kiện giao diện
+      els.toggleKeyBtn.addEventListener("click", function () {
+        var isPass = els.apiKeyInput.type === "password";
+        els.apiKeyInput.type = isPass ? "text" : "password";
+        els.toggleKeyBtn.textContent = isPass ? "Ẩn" : "Hiện";
+      });
+
+      els.saveKeyBtn.addEventListener("click", function () {
+        var val = els.apiKeyInput.value.trim();
+        if (!val) {
+          alert("Ô API Key đang trống.");
+          return;
+        }
+        safeSetStorage(STORAGE_KEY_API, val);
+        els.keyStatus.textContent = "Đã lưu API Key an toàn trên thiết bị này.";
+      });
+
+      els.clearKeyBtn.addEventListener("click", function () {
+        els.apiKeyInput.value = "";
+        safeRemoveStorage(STORAGE_KEY_API);
+        els.keyStatus.textContent = "Đã xóa API Key khỏi bộ nhớ thiết bị.";
+      });
+
+      els.pickFilesBtn.addEventListener("click", function () {
+        if (!state.isRunning) {
+          els.fileInput.click();
+        }
+      });
+
+      els.fileInput.addEventListener("change", function (e) {
+        var files = e.target && e.target.files ? Array.prototype.slice.call(e.target.files) : [];
+        if (!files.length) return;
+
+        files.forEach(function (file, idx) {
+          if (!file || !file.type || file.type.indexOf("image/") !== 0) return;
+          var sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          state.pages.push({
+            id: String(Date.now()) + "_" + idx + "_" + Math.random().toString(36).slice(2, 7),
+            name: file.name || ("anh_" + (idx + 1) + ".jpg"),
+            sizeMB: sizeMB,
+            file: file,
+            objectUrl: URL.createObjectURL(file),
+            resultHtml: "",
+            error: ""
+          });
+        });
+
+        renderPageList();
+        els.fileInput.value = "";
+      });
+
+      els.clearPagesBtn.addEventListener("click", function () {
+        if (!state.isRunning) {
+          clearAllPages();
+        }
+      });
+
+      els.startBtn.addEventListener("click", handleStart);
+
+      els.stopBtn.addEventListener("click", function () {
+        if (state.isRunning) {
+          state.cancelRequested = true;
+          els.statusText.textContent = "Đang dừng sau khi hoàn tất bước hiện tại...";
+        }
+      });
+
+      els.copyTextBtn.addEventListener("click", function () {
+        var plainText = (els.resultContainer.innerText || "").trim();
+        if (!plainText) {
+          alert("Chưa có nội dung để sao chép.");
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(plainText).then(
+            function () {
+              alert("Đã sao chép toàn bộ nội dung văn bản.");
+            },
+            function () {
+              alert("Không thể tự động copy, hãy bôi đen và sao chép thủ công.");
+            }
+          );
+        } else {
+          alert("WebView này không hỗ trợ clipboard tự động, hãy bôi đen và sao chép thủ công.");
+        }
+      });
+
+      els.downloadHtmlBtn.addEventListener("click", function () {
+        var content = els.resultContainer.innerHTML.trim();
+        if (!content || els.resultContainer.querySelector(".hint")) {
+          alert("Chưa có nội dung tổng hợp để tải xuống.");
+          return;
+        }
+        var fullDoc =
+          "<!DOCTYPE html><html lang='vi'><head><meta charset='UTF-8'><title>Sach Tong Hop</title>" +
+          "<style>body{font-family:Arial,sans-serif;max-width:800px;margin:20px auto;padding:0 14px;line-height:1.6}" +
+          "img{max-width:100%;height:auto;display:block;margin:10px auto;border-radius:6px}" +
+          ".img-caption{text-align:center;color:#555;font-size:0.85em;margin-bottom:12px}</style></head><body>" +
+          content +
+          "</body></html>";
+
+        try {
+          var blob = new Blob([fullDoc], { type: "text/html;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "tong-hop-sach.html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 1500);
+        } catch (err) {
+          alert("Trình duyệt/WebView này không hỗ trợ tải file trực tiếp.");
+        }
+      });
+
+      els.clearResultBtn.addEventListener("click", function () {
+        if (state.isRunning) return;
+        state.pages.forEach(function (p) {
+          p.resultHtml = "";
+          p.error = "";
+        });
+        renderCombinedResult();
+      });
+
+      initSettings();
+    })();
+  </script>
+</body>
+</html>
